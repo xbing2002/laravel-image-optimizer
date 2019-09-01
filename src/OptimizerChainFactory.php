@@ -14,11 +14,11 @@ class OptimizerChainFactory
     {
         return (new OptimizerChain())
             ->useLogger(static::getLogger($config))
-            ->setTimeout($config['timeout'])
+            ->setTimeout(intval($config['timeout']))
             ->setOptimizers(static::getOptimizers($config));
     }
 
-    protected static function getLogger($config): LoggerInterface
+    protected static function getLogger($config)
     {
         $configuredLogger = $config['log_optimizer_activity'];
 
@@ -40,7 +40,7 @@ class OptimizerChainFactory
     protected static function getOptimizers(array $config)
     {
         return collect($config['optimizers'])
-          ->mapWithKeys(function (array $options, string $optimizerClass) use ($config) {
+          ->mapWithKeys(function (array $options, $optimizerClass) use ($config) {
               if (! is_a($optimizerClass, Optimizer::class, true)) {
                   throw InvalidConfiguration::notAnOptimizer($optimizerClass);
               }
@@ -59,8 +59,8 @@ class OptimizerChainFactory
           ->toArray();
     }
 
-    public static function getBinaryPath(array $config): string
+    public static function getBinaryPath(array $config)
     {
-        return $config['binary_path'] ?? '';
+        return $config['binary_path'] ? $config['binary_path']:'';
     }
 }
